@@ -40,6 +40,8 @@ import androidx.compose.ui.layout.layout
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import coil.compose.rememberImagePainter
 import com.example.layoutcodelab.ui.theme.LayoutCodelabTheme
 import kotlinx.coroutines.launch
@@ -287,6 +289,70 @@ fun Chip(modifier: Modifier = Modifier, text: String) {
 fun ChipPreview() {
   LayoutCodelabTheme {
     Chip(text = "Hi there")
+  }
+}
+
+@Composable
+fun ConstraintlayoutContent() {
+  ConstraintLayout {
+
+    val (button, button2, text) = createRefs()
+
+    Button(
+      onClick = {  },
+      modifier = Modifier.constrainAs(button) {
+        top.linkTo(parent.top, margin = 16.dp)
+      }
+    ) {
+      Text("Button")
+    }
+
+    Text("Text", Modifier.constrainAs(text) {
+      top.linkTo(button.bottom, margin = 16.dp)
+      centerAround(button.end)
+    })
+
+    val barrier = createEndBarrier(button, text)
+    Button(
+      onClick = { },
+      modifier = Modifier.constrainAs(button2) {
+        top.linkTo(parent.top, margin = 16.dp)
+        start.linkTo(barrier)
+      }
+    ) {
+      Text("Button 2")
+    }
+  }
+}
+
+@Preview
+@Composable
+fun ConstraintLayoutContentPreview() {
+  LayoutCodelabTheme {
+    ConstraintlayoutContent()
+  }
+}
+
+@Composable
+fun LargeConstraintLayout() {
+  ConstraintLayout {
+    val text = createRef()
+    val guideline = createGuidelineFromStart(fraction = 0.5f)
+    Text(
+      "This is very very very very very very very very long text",
+      Modifier.constrainAs(text) {
+        linkTo(start = guideline, end = parent.end)
+        width = Dimension.preferredWrapContent
+      }
+    )
+  }
+}
+
+@Preview
+@Composable
+fun LargeConstraintLayoutPreview() {
+  LayoutCodelabTheme {
+    LargeConstraintLayout()
   }
 }
 
