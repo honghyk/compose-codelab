@@ -27,7 +27,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
@@ -57,7 +56,7 @@ fun TodoScreen(
 ) {
     Column {
         TodoItemInputBackground(elevate = true, Modifier.fillMaxWidth()) {
-            TodoItemInput(onItemCompleted = onAddItem)
+            TodoItemEntryInput(onItemCompleted = onAddItem)
         }
         LazyColumn(
             modifier = Modifier.weight(1f),
@@ -104,7 +103,7 @@ fun TodoRow(
 }
 
 @Composable
-fun TodoItemInput(onItemCompleted: (TodoItem) -> Unit) {
+fun TodoItemEntryInput(onItemCompleted: (TodoItem) -> Unit) {
     val (text, setText) = remember { mutableStateOf("") }
     val (icon, setIcon) = remember { mutableStateOf(TodoIcon.Default) }
     val iconVisible = text.isNotBlank()
@@ -113,17 +112,37 @@ fun TodoItemInput(onItemCompleted: (TodoItem) -> Unit) {
         setIcon(TodoIcon.Default)
         setText("")
     }
+    TodoItemInput(
+        text = text,
+        onTextChange = setText,
+        icon = icon,
+        onIconChange = setIcon,
+        submit = submit,
+        iconVisible = iconVisible
+    )
+}
+
+@Composable
+fun TodoItemInput(
+    text: String,
+    onTextChange: (String) -> Unit,
+    icon: TodoIcon,
+    onIconChange: (TodoIcon) -> Unit,
+    submit: () -> Unit,
+    iconVisible: Boolean
+) {
     Column {
-        Row(Modifier
-            .padding(horizontal = 16.dp)
-            .padding(top = 16.dp)
+        Row(
+            Modifier
+                .padding(horizontal = 16.dp)
+                .padding(top = 16.dp)
         ) {
             TodoInputText(
                 text = text,
-                onTextChange = setText,
+                onTextChange = onTextChange,
                 modifier = Modifier
-                .weight(1f)
-                .padding(end = 8.dp),
+                    .weight(1f)
+                    .padding(end = 8.dp),
                 onImeAction = submit
             )
             TodoEditButton(
@@ -134,7 +153,7 @@ fun TodoItemInput(onItemCompleted: (TodoItem) -> Unit) {
             )
         }
         if (iconVisible) {
-            AnimatedIconRow(icon, setIcon, Modifier.padding(top = 8.dp))
+            AnimatedIconRow(icon, onIconChange, Modifier.padding(top = 8.dp))
         } else {
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -166,4 +185,4 @@ fun PreviewTodoRow() {
 
 @Preview
 @Composable
-fun PreviewTodoItemInput() = TodoItemInput(onItemCompleted = { })
+fun PreviewTodoItemInput() = TodoItemEntryInput(onItemCompleted = { })
